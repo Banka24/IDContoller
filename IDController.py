@@ -81,7 +81,7 @@ while SystemOn:
                     cursor.execute("SELECT id, firstname, secondname, birthdate FROM `users` WHERE firstname = %s AND secondname = %s", (first_name, second_name))
                     result = cursor.fetchone()
                     if result is not None:
-                        print(f"{result['id']} |{result['secondname']} | {result['firstname']}| {result['birthdate']}")
+                        print(f"| {result['id']} | {result['secondname']} | {result['firstname']} | {result['birthdate']} |")
                     else:
                         print("Такого имени нет в БД!")                                      
             except Exception as ex:
@@ -93,8 +93,8 @@ while SystemOn:
             birthdate = input("Введите дату рождения (ГГГГ-ММ-ДД): ")
             with connection.cursor() as cursor: 
                 cursor.execute("DELETE FROM `users` WHERE firstname = %s AND secondname = %s AND birthdate = %s", (first_name, second_name, birthdate))
-            commit = input("Вы уверены? y/n: ")
-            if commit == 'y':                                
+            commit = input("Вы уверены? да/нет: ")
+            if commit == 'да':                                
                 connection.commit() 
                 print("Пользователь удалён успешно!")        
             
