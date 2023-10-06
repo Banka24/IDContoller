@@ -79,8 +79,8 @@ while SystemOn:
             try:
                 with connection.cursor() as cursor:                    
                     cursor.execute("SELECT id, firstname, secondname, birthdate FROM `users` WHERE firstname = %s AND secondname = %s", (first_name, second_name))
-                    result = cursor.fetchone()
-                    if result is not None:
+                    results = cursor.fetchall()
+                    for result in results:
                         print(f"| {result['id']} | {result['secondname']} | {result['firstname']} | {result['birthdate']} |")
                     else:
                         print("Такого имени нет в БД!")                                      
