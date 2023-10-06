@@ -6,17 +6,9 @@ user = "root"
 password = "root"
 db_name = "idcontroller"
 
-def CheckSecondName():
-    name = input("Введите фамилию: ")
-    for char in name:
-        if char not in "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя": 
-            name = ''     
-    return name 
-
-def CheckFirstName():
-    name = input("Введите имя: ")
-    for char in name:
-        if char not in "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя": 
+def CheckName(name):        
+    for char in name.lower():
+        if char not in "абвгдеёжзийклмнопрстуфхцчшщъыьэюя": 
             name = ''     
     return name 
 
@@ -59,8 +51,10 @@ while SystemOn:
 
         case 1:
             print("Вы должны ввести фамилию и имя")            
-            first_name = CheckFirstName() 
-            second_name = CheckSecondName()
+            first_name = input("Введите имя: ")
+            CheckName(first_name)     
+            second_name = input("Введите фамилию: ")
+            CheckName(second_name) 
             birthdate = input("Введите дату рождения (ГГГГ-ММ-ДД): ")    
             if first_name != '' and second_name != '' and birthdate != '0000-00-00':
                 try:
@@ -73,30 +67,38 @@ while SystemOn:
             else:
                 print("Некорректные данные.")
 
-        case 2:    
-            first_name = CheckFirstName()       
-            second_name = CheckSecondName()         
+        case 2:
+            first_name = input("Введите имя: ")
+            CheckName(first_name)     
+            second_name = input("Введите фамилию: ")
+            CheckName(second_name)     
             try:
                 with connection.cursor() as cursor:                    
                     cursor.execute("SELECT id, firstname, secondname, birthdate FROM `users` WHERE firstname = %s AND secondname = %s", (first_name, second_name))
                     results = cursor.fetchall()
-                    for result in results:
-                        print(f"| {result['id']} | {result['secondname']} | {result['firstname']} | {result['birthdate']} |")
+                    if results:
+                        for result in results:
+                            print(f"| {result['id']} | {result['secondname']} | {result['firstname']} | {result['birthdate']} |")
                     else:
                         print("Такого имени нет в БД!")                                      
             except Exception as ex:
                 print("Произошла ошибка...")       
                         
         case 3:
-            first_name = CheckFirstName()        
-            second_name = CheckSecondName()
+            first_name = input("Введите имя: ")
+            CheckName(first_name)     
+            second_name = input("Введите фамилию: ")
+            CheckName(second_name) 
             birthdate = input("Введите дату рождения (ГГГГ-ММ-ДД): ")
             with connection.cursor() as cursor: 
                 cursor.execute("DELETE FROM `users` WHERE firstname = %s AND secondname = %s AND birthdate = %s", (first_name, second_name, birthdate))
             commit = input("Вы уверены? да/нет: ")
             if commit == 'да':                                
                 connection.commit() 
-                print("Пользователь удалён успешно!")        
+                print("Пользователь удалён успешно!")
+
+        case 4:
+            pass        
             
         case 5:
             connection.close()                       
