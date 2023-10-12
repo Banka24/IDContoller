@@ -1,39 +1,10 @@
-import pymysql
+from connect import connection
+from definitions import CheckName
+from add_delete import add_users, delete_users
+from check_update import check_users, update_users
 
 SystemOn = True
-host = "localhost"
-user = "root"
-password = "root"
-db_name = "idcontroller"
 
-def CheckName(name):        
-    for char in name.lower():
-        if char not in "абвгдеёжзийклмнопрстуфхцчшщъыьэюя": 
-            name = ''     
-    return name 
-
-try:
-    connection = pymysql.connect(
-        host=host,
-        port=3306,
-        user=user,
-        password=password,
-        database=db_name,
-        cursorclass=pymysql.cursors.DictCursor
-    )
-    print("Подключение успешно...") 
-    cursor = connection.cursor()
-    table_name = "users"
-    cursor.execute(f"SHOW TABLES LIKE '{table_name}'")
-    result = cursor.fetchone()
-    if result is None:
-        create_table = "CREATE TABLE `users`(id int AUTO_INCREMENT, secondname varchar(32), firstname varchar(32), birthdate DATE, PRIMARY KEY (id))"
-        cursor.execute(create_table)        
-
-except Exception as ex:
-    print("Connection refused...")
-    print(ex)  
-        
 while SystemOn: 
 
     print("IDControl v0.3", "Вы можете: 1)внести человека в БД, 2)проверить его наличие в БД, 3)удалить его из БД.","5) Выход из программы.", sep='\n')
@@ -50,55 +21,16 @@ while SystemOn:
     match operator:
 
         case 1:
-            print("Вы должны ввести фамилию и имя")            
-            first_name = input("Введите имя: ")
-            CheckName(first_name)     
-            second_name = input("Введите фамилию: ")
-            CheckName(second_name) 
-            birthdate = input("Введите дату рождения (ГГГГ-ММ-ДД): ")    
-            if first_name != '' and second_name != '' and birthdate != '0000-00-00':
-                try:
-                    with connection.cursor() as cursor:
-                        cursor.execute("INSERT INTO `users` (firstname, secondname, birthdate) VALUES (%s, %s, %s)", (first_name, second_name, birthdate))
-                        connection.commit()
-                    print(f"Пользователь {second_name} {first_name} был зарегестрирован.")
-                except Exception as ex:
-                    print("Произошла ошибка...")                    
-            else:
-                print("Некорректные данные.")
+            add_users()
 
         case 2:
-            first_name = input("Введите имя: ")
-            CheckName(first_name)     
-            second_name = input("Введите фамилию: ")
-            CheckName(second_name)     
-            try:
-                with connection.cursor() as cursor:                    
-                    cursor.execute("SELECT id, firstname, secondname, birthdate FROM `users` WHERE firstname = %s AND secondname = %s", (first_name, second_name))
-                    results = cursor.fetchall()
-                    if results:
-                        for result in results:
-                            print(f"| {result['id']} | {result['secondname']} | {result['firstname']} | {result['birthdate']} |")
-                    else:
-                        print("Такого имени нет в БД!")                                      
-            except Exception as ex:
-                print("Произошла ошибка...")       
+            check_users()    
                         
         case 3:
-            first_name = input("Введите имя: ")
-            CheckName(first_name)     
-            second_name = input("Введите фамилию: ")
-            CheckName(second_name) 
-            birthdate = input("Введите дату рождения (ГГГГ-ММ-ДД): ")
-            with connection.cursor() as cursor: 
-                cursor.execute("DELETE FROM `users` WHERE firstname = %s AND secondname = %s AND birthdate = %s", (first_name, second_name, birthdate))
-            commit = input("Вы уверены? да/нет: ")
-            if commit == 'да':                                
-                connection.commit() 
-                print("Пользователь удалён успешно!")
+           delete_users()
 
         case 4:
-            pass        
+            update_users()      
             
         case 5:
             connection.close()                       
