@@ -13,7 +13,7 @@ def check_users():
             else:
                 print("Такого имени нет в БД!")                                      
     except Exception:
-        print("Произошла ошибка...") 
+        print("Не удалось подключиться к базе данных.") 
 
 def update_users():
     pass  

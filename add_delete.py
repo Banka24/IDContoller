@@ -1,6 +1,5 @@
-from definitions import input_data
+from definitions import  input_data
 from connect import connection
-
 
 def add_users():
     first_name, second_name, birthdate = input_data()    
@@ -11,7 +10,7 @@ def add_users():
                 connection.commit()
             print(f"Пользователь {second_name} {first_name} был зарегестрирован.")
         except Exception:
-            print("Произошла ошибка...")                    
+            print("Не удалось добавить пользователя.")                    
     else:
         print("Некорректные данные.")
 
